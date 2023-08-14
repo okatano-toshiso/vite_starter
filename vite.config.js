@@ -142,5 +142,6 @@ export default defineConfig({
                 return pageData[pagePath];
             },
         }),
+        htmlPlugin()
     ]
 });
