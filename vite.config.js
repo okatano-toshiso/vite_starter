@@ -1,33 +1,24 @@
 import { defineConfig } from "vite";
-//import設定を追記
 import { resolve } from "path";
-// HTMLの複数出力を自動化する
-//./src配下のファイル一式を取得
 import fs from "fs";
 import path from "path";
 import handlebars from "vite-plugin-handlebars";
+const siteData = require('./sitedata.json');
 
 const files = [];
 function readDirectory(dirPath) {
     const items = fs.readdirSync(dirPath);
-
     for (const item of items) {
         const itemPath = path.join(dirPath, item);
-
         if (fs.statSync(itemPath).isDirectory()) {
-            // componentsディレクトリを除外する
             if (item === "components") {
                 continue;
             }
-
             readDirectory(itemPath);
         } else {
-            // htmlファイル以外を除外する
             if (path.extname(itemPath) !== ".html") {
                 continue;
             }
-
-            // nameを決定する
             let name;
             if (dirPath === path.resolve(__dirname, "src")) {
                 name = path.parse(itemPath).name;
@@ -36,11 +27,8 @@ function readDirectory(dirPath) {
                 const dirName = relativePath.replace(/\//g, "_");
                 name = `${dirName}_${path.parse(itemPath).name}`;
             }
-
-            // pathを決定する
             const relativePath = path.relative(path.resolve(__dirname, "src"), itemPath);
             const filePath = `/${relativePath}`;
-
             files.push({ name, path: filePath });
         }
     }
@@ -51,21 +39,6 @@ for (let i = 0; i < files.length; i++) {
     const file = files[i];
     inputFiles[file.name] = resolve(__dirname, "./src" + file.path);
 }
-
-//HTML上で出し分けたい各ページごとの情報
-const pageData = {
-    "/index.html": {
-        isHome: true,
-        imgPath: "/public/assets/img/",
-        scriptPath: "/public/assets/js/",
-        stylePath: "/public/assets/css/",
-        title: "Main Page",
-    },
-    "/list.html": {
-        isHome: false,
-        title: "List Page",
-    },
-};
 
 //CSSとJSファイルに更新パラメータを追加
 const htmlPlugin = () => {
@@ -124,12 +97,7 @@ export default defineConfig({
                 entryFileNames: "assets/js/[name].js",
             },
             input: {
-                index: resolve(__dirname, "./src/index.html"),
-                /*
-                    複数HTMLページを出力したい時にここへ追記していく
-                    xxx: resolve(__dirname, './src/xxx.html'),
-                */
-                list: resolve(__dirname, "./src/list.html"),
+                t2_index: resolve(__dirname, "./src/top/index.html")
             },
         },
     },
@@ -138,9 +106,16 @@ export default defineConfig({
             //コンポーネントの格納ディレクトリを指定
             partialDirectory: resolve(__dirname, "./src/components"),
             //各ページ情報の読み込み
-            context(pagePath) {
-                return pageData[pagePath];
-            },
+            context: (pagePath) => {
+                return {
+                    // envUrl: command === 'serve' ? 'http:localhost' : 'https://example.com',
+                    siteName: siteData.siteName,
+                    siteUrl: siteData.siteUrl,
+                    googleAccount: siteData.googleAccount,
+                    filePath: siteData.filePath,
+                    pageMeta: siteData.pageMeta[pagePath]
+                }
+            }
         }),
         htmlPlugin()
     ]

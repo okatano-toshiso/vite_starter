@@ -26,9 +26,5 @@
     "> 5%",
     "Firefox ESR",
     "not dead"
-  ],
-  "volta": {
-    "node": "16.20.0",
-    "npm": "8.19.4"
-  }
+  ]
 }

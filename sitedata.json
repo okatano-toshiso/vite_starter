@@ -1,0 +1,21 @@
+{
+    "siteName": "初期設定",
+    "siteUrl": "",
+    "googleAccount": "",
+    "filePath": {
+        "img": "./assets/img/",
+        "script": "./assets/js/",
+        "style": "./assets/css/",
+        "commonImg": "../common/assets/img/",
+        "commonScript": "../common/assets/js/",
+        "commonStyle": "../common/assets/css/"
+    },
+    "pageMeta": {
+        "/t2/index.html": {
+            "actionLink": "/",
+            "title": "/",
+            "description": "/",
+            "keywords": "/"
+        }
+    }
+}
